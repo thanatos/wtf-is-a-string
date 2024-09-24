@@ -75,7 +75,7 @@ primitive.
 | JavaScript | ❌ Sequence of UTF-16 code units | ✅ Yes |
 | Java     | ❌ Sequence of UTF-16 code units | ❌ No |
 | Lua      | ❌ Byte string | ❌ No |
-| Objective-C | ❌ Unclear, probably sequence of UTF-16 code units | ❌ No |
+| Objective-C | ❌ Sequence of UTF-16 code units + extra | ❌ No |
 | Python   | ❌ Sequence of code points | ✅ Yes |
 | Rust     | ✅ Unicode  | ✅ Yes |
 | Swift    | ❌ Unclear, probably sequence of UTF-16 code units | ❌ No |
@@ -281,8 +281,12 @@ cryptic errors into your browser's debugger) and venture onwards…
 
 It seems like an `NSString` can be infallibly instantiated
 from an array of UTF-16 code units, implying "sequence of UTF-16 code units".
+There's a counter-example in `counter-examples/swift` demonstrating this.
 
-TODO: counter-example?
+Note that it appears that NSStrings can use a variety of encodings under the
+hood; I've *only* explored the "UTF-16" (which isn't UTF-16, as demonstrated)
+encoding. It is possible that there is behavior possible under other encodings
+that would further disqualify it from "sequence of UTF-16 code units".
 
 
 ### Python
@@ -333,6 +337,15 @@ then `String` is.
 
 However, the Obj-C section has issues here. So presumably, a counter-example is
 possible.
+
+---
+
+"Bridges", while infallible, apparently are not *lossless*: bridging an
+`NSString` into a Swift string results in a lossy-replacement decoding (i.e.,
+sequences of invalid UTF-16 code units will be replaced by U+FFFD).
+
+It seems *possible* then that `NSString` can be non-Unicode, whereas the Swift
+string might yet be.
 
 
 ## Other
